@@ -109,8 +109,26 @@
         .weak mtvec_handler;                                            \
 trap_vector:                                                            \
         /* test whether the test came from pass/fail */                 \
+        li a5, CAUSE_MISALIGNED_LOAD
+        bne a4, a5, 2f;
+        //print «envcall»
+        li a0, 11
+        li a1, 101 //e
+        ecall
+        li a1, 110 //n
+        ecall
+        li a1, 118 //v
+        ecall
+        li a1, 99  //c
+        ecall
+        li a1, 97  //a
+        ecall
+        li a1, 108 //l
+        ecall
+        li a1, 108 //l
+        ecall
         csrr a4, mcause;                                                \
-        li a5, CAUSE_USER_ECALL;                                        \
+2:      li a5, CAUSE_USER_ECALL;                                        \
         beq a4, a5, _report;                                            \
         li a5, CAUSE_SUPERVISOR_ECALL;                                  \
         beq a4, a5, _report;                                            \
