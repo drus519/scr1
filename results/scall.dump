@@ -1,0 +1,168 @@
+
+/home/oleg/Andrey/scr1/build/verilator_wf_AHB_IMC/scall.elf:     формат файла elf32-littleriscv
+
+
+Дизассемблирование раздела .text.init:
+
+00000000 <SIM_EXIT-0xf4>:
+	...
+
+000000f4 <SIM_EXIT>:
+      f4:	00000013          	nop
+
+000000f8 <SIM_STOP>:
+      f8:	0000006f          	j	f8 <SIM_STOP>
+      fc:	ffff                	0xffff
+      fe:	ffff                	0xffff
+	...
+
+0000a880 <trap_vector>:
+    a880:	34202773          	csrr	a4,mcause
+    a884:	47ad                	li	a5,11
+    a886:	04f71363          	bne	a4,a5,a8cc <trap_vector+0x4c>
+    a88a:	f00005b7          	lui	a1,0xf0000
+    a88e:	06500793          	li	a5,101
+    a892:	00f58023          	sb	a5,0(a1) # f0000000 <__global_pointer$+0xefff4638>
+    a896:	06e00793          	li	a5,110
+    a89a:	00f58023          	sb	a5,0(a1)
+    a89e:	07600793          	li	a5,118
+    a8a2:	00f58023          	sb	a5,0(a1)
+    a8a6:	06300793          	li	a5,99
+    a8aa:	00f58023          	sb	a5,0(a1)
+    a8ae:	06100793          	li	a5,97
+    a8b2:	00f58023          	sb	a5,0(a1)
+    a8b6:	06c00793          	li	a5,108
+    a8ba:	00f58023          	sb	a5,0(a1)
+    a8be:	06c00793          	li	a5,108
+    a8c2:	00f58023          	sb	a5,0(a1)
+    a8c6:	47a9                	li	a5,10
+    a8c8:	00f58023          	sb	a5,0(a1)
+    a8cc:	47a1                	li	a5,8
+    a8ce:	02f70463          	beq	a4,a5,a8f6 <_report>
+    a8d2:	47a5                	li	a5,9
+    a8d4:	02f70163          	beq	a4,a5,a8f6 <_report>
+    a8d8:	47ad                	li	a5,11
+    a8da:	00f70e63          	beq	a4,a5,a8f6 <_report>
+    a8de:	00001717          	auipc	a4,0x1
+    a8e2:	80670713          	addi	a4,a4,-2042 # b0e4 <mtvec_handler>
+    a8e6:	c311                	beqz	a4,a8ea <trap_vector+0x6a>
+    a8e8:	8702                	jr	a4
+    a8ea:	34202773          	csrr	a4,mcause
+    a8ee:	00075363          	bgez	a4,a8f4 <handle_exception>
+    a8f2:	a009                	j	a8f4 <handle_exception>
+
+0000a8f4 <handle_exception>:
+    a8f4:	4505                	li	a0,1
+
+0000a8f6 <_report>:
+    a8f6:	00b0006f          	j	b100 <sc_exit>
+    a8fa:	00000013          	nop
+    a8fe:	0001                	nop
+	...
+
+0000b000 <_start>:
+    b000:	f1402573          	csrr	a0,mhartid
+    b004:	e101                	bnez	a0,b004 <_start+0x4>
+    b006:	4e01                	li	t3,0
+    b008:	00000297          	auipc	t0,0x0
+    b00c:	87828293          	addi	t0,t0,-1928 # a880 <trap_vector>
+    b010:	30529073          	csrw	mtvec,t0
+    b014:	4505                	li	a0,1
+    b016:	057e                	slli	a0,a0,0x1f
+    b018:	00054863          	bltz	a0,b028 <_start+0x28>
+    b01c:	0ff0000f          	fence
+    b020:	85f2                	mv	a1,t3
+    b022:	4501                	li	a0,0
+    b024:	00000073          	ecall
+    b028:	ffff5297          	auipc	t0,0xffff5
+    b02c:	fd828293          	addi	t0,t0,-40 # 0 <CL_SIZE-0x20>
+    b030:	00028e63          	beqz	t0,b04c <_start+0x4c>
+    b034:	10529073          	csrw	stvec,t0
+    b038:	0000b2b7          	lui	t0,0xb
+    b03c:	10928293          	addi	t0,t0,265 # b109 <sc_exit+0x9>
+    b040:	30229073          	csrw	medeleg,t0
+    b044:	30202373          	csrr	t1,medeleg
+    b048:	8a6296e3          	bne	t0,t1,a8f4 <handle_exception>
+    b04c:	30005073          	csrwi	mstatus,0
+    b050:	00002537          	lui	a0,0x2
+    b054:	80050513          	addi	a0,a0,-2048 # 1800 <STACK_SIZE+0x1400>
+    b058:	30052073          	csrs	mstatus,a0
+    b05c:	00000297          	auipc	t0,0x0
+    b060:	04428293          	addi	t0,t0,68 # b0a0 <_run_test>
+    b064:	34129073          	csrw	mepc,t0
+    b068:	f1402573          	csrr	a0,mhartid
+    b06c:	30200073          	mret
+	...
+
+Дизассемблирование раздела .text:
+
+0000b0a0 <_run_test>:
+    b0a0:	4e09                	li	t3,2
+    b0a2:	000022b7          	lui	t0,0x2
+    b0a6:	80028293          	addi	t0,t0,-2048 # 1800 <STACK_SIZE+0x1400>
+    b0aa:	3002b073          	csrc	mstatus,t0
+    b0ae:	00000297          	auipc	t0,0x0
+    b0b2:	01028293          	addi	t0,t0,16 # b0be <_run_test+0x1e>
+    b0b6:	34129073          	csrw	mepc,t0
+    b0ba:	30200073          	mret
+    b0be:	4e05                	li	t3,1
+    b0c0:	00000073          	ecall
+    b0c4:	a019                	j	b0ca <fail>
+    b0c6:	01c01863          	bne	zero,t3,b0d6 <pass>
+
+0000b0ca <fail>:
+    b0ca:	0ff0000f          	fence
+    b0ce:	85f2                	mv	a1,t3
+    b0d0:	4505                	li	a0,1
+    b0d2:	00000073          	ecall
+
+0000b0d6 <pass>:
+    b0d6:	0ff0000f          	fence
+    b0da:	85f2                	mv	a1,t3
+    b0dc:	4501                	li	a0,0
+    b0de:	00000073          	ecall
+    b0e2:	0001                	nop
+
+0000b0e4 <mtvec_handler>:
+    b0e4:	4321                	li	t1,8
+    b0e6:	342022f3          	csrr	t0,mcause
+    b0ea:	fe6290e3          	bne	t0,t1,b0ca <fail>
+    b0ee:	b7e5                	j	b0d6 <pass>
+
+0000b0f0 <ecall>:
+    b0f0:	00000073          	ecall
+	...
+
+0000b100 <sc_exit>:
+    b100:	ff5f406f          	j	f4 <SIM_EXIT>
+    b104:	00000013          	nop
+    b108:	00000013          	nop
+    b10c:	00000013          	nop
+    b110:	00000013          	nop
+    b114:	00000013          	nop
+    b118:	00000013          	nop
+    b11c:	00000013          	nop
+	...
+
+Дизассемблирование раздела .data:
+
+0000b140 <begin_regstate>:
+	...
+
+Дизассемблирование раздела .tohost:
+
+0000b180 <tohost>:
+	...
+
+0000b1c0 <fromhost>:
+	...
+
+Дизассемблирование раздела .sdata:
+
+0000b1c8 <__global_pointer$-0x800>:
+	...
+
+Дизассемблирование раздела .stack:
+
+0000fc00 <.stack>:
+	...

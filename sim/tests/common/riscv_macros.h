@@ -9,6 +9,10 @@
 //-----------------------------------------------------------------------
 // Begin Macro
 //-----------------------------------------------------------------------
+#define SC_SIM_OUTPORT (0xf0000000)
+#define RVTEST_PUTCHAR(c) \
+	li a5, (c); \
+	sb a5, 0(a1);
 
 #define RVTEST_RV64U                                                    \
   .macro init;                                                          \
@@ -103,31 +107,24 @@
 
 #define RVTEST_CODE_BEGIN                                               \
         .section .text.init;                                            \
-        .org 0xC0, 0x00;                                                \
+        .org 0x00, 0x00;                                                \
         .align  6;                                                      \
         .weak stvec_handler;                                            \
         .weak mtvec_handler;                                            \
 trap_vector:                                                            \
         /* test whether the test came from pass/fail */                 \
-        li a5, CAUSE_MISALIGNED_LOAD
-        bne a4, a5, 2f;
-        //print «envcall»
-        li a0, 11
-        li a1, 101 //e
-        ecall
-        li a1, 110 //n
-        ecall
-        li a1, 118 //v
-        ecall
-        li a1, 99  //c
-        ecall
-        li a1, 97  //a
-        ecall
-        li a1, 108 //l
-        ecall
-        li a1, 108 //l
-        ecall
         csrr a4, mcause;                                                \
+        li a5, CAUSE_ILLEGAL_INSTRUCTION;                               \
+        bne a4, a5, 2f;							\
+	li a1, SC_SIM_OUTPORT; \
+	RVTEST_PUTCHAR('e'); \
+	RVTEST_PUTCHAR('n'); \
+	RVTEST_PUTCHAR('v'); \
+	RVTEST_PUTCHAR('c'); \
+	RVTEST_PUTCHAR('a'); \
+	RVTEST_PUTCHAR('l'); \
+	RVTEST_PUTCHAR('l'); \
+	RVTEST_PUTCHAR('\n'); 						\
 2:      li a5, CAUSE_USER_ECALL;                                        \
         beq a4, a5, _report;                                            \
         li a5, CAUSE_SUPERVISOR_ECALL;                                  \
@@ -151,6 +148,7 @@ _report:                                                                \
         j sc_exit;                                                      \
         .align  6;                                                      \
         .globl _start;                                                  \
+	.org 0x7F6;							\
 _start:                                                                 \
         RISCV_MULTICORE_DISABLE;                                        \
         /*INIT_SPTBR;*/                                                 \
@@ -182,6 +180,7 @@ _start:                                                                 \
         csrr a0, mhartid;                                               \
         mret;                                                           \
         .section .text;                                                 \
+
 _run_test:
 
 //-----------------------------------------------------------------------
@@ -194,18 +193,19 @@ _run_test:
 // Pass/Fail Macro
 //-----------------------------------------------------------------------
 
-#define RVTEST_PASS                                                     \
-        fence;                                                          \
-        mv a1, TESTNUM;                                                 \
-        li  a0, 0x0;                                                    \
-        ecall
+
+#define RVTEST_PASS \
+	fence; \
+	mv a1, TESTNUM; \
+	li a0, 0x0; \
+	ecall;\
 
 #define TESTNUM x28
 #define RVTEST_FAIL                                                     \
         fence;                                                          \
         mv a1, TESTNUM;                                                 \
         li  a0, 0x1;                                                    \
-        ecall
+        ecall;
 
 //-----------------------------------------------------------------------
 // Data Section Macro
