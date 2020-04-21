@@ -1,16 +1,16 @@
-# Описание проекта
+# РћРїРёСЃР°РЅРёРµ РїСЂРѕРµРєС‚Р°
 
-Лабораторная работа Lab SCR1 sim
+Р›Р°Р±РѕСЂР°С‚РѕСЂРЅР°СЏ СЂР°Р±РѕС‚Р° Lab SCR1 sim
 
-## Вариант задания
+## Р’Р°СЂРёР°РЅС‚ Р·Р°РґР°РЅРёСЏ
 
-№ Варианта | Вид исключения | Тест | Reset Vector | Trap Vector | При обработке
+в„– Р’Р°СЂРёР°РЅС‚Р° | Р’РёРґ РёСЃРєР»СЋС‡РµРЅРёСЏ | РўРµСЃС‚ | Reset Vector | Trap Vector | РџСЂРё РѕР±СЂР°Р±РѕС‚РєРµ
 ---------- | -------------- | ---- | ------------ | ----------- | ------------
-7 | Environment call from M-mode | isa/rv32mi/scall.S | 0xB000 | 0xA880 | Вывод строки «envcall»
+7 | Environment call from M-mode | isa/rv32mi/scall.S | 0xB000 | 0xA880 | Р’С‹РІРѕРґ СЃС‚СЂРѕРєРё В«envcallВ»
 
-## Результаты работы
+## Р РµР·СѓР»СЊС‚Р°С‚С‹ СЂР°Р±РѕС‚С‹
 
-* ./results/test_results.txt - результат симуляции
-* ./results/ma_addr.dump - дамп теста
-* ./results/trace_mprf_diff_.log - трейслог MPRF
-* ./results/trace_csr_.log - трейслог CSR
+* ./results/test_results.txt - СЂРµР·СѓР»СЊС‚Р°С‚ СЃРёРјСѓР»СЏС†РёРё
+* ./results/ma_addr.dump - РґР°РјРї С‚РµСЃС‚Р°
+* ./results/trace_mprf_diff_.log - С‚СЂРµР№СЃР»РѕРі MPRF
+* ./results/trace_csr_.log - С‚СЂРµР№СЃР»РѕРі CSR
