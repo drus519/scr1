@@ -2,10 +2,10 @@
 [*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
 [*] Fri May 15 14:22:47 2020
 [*]
-[dumpfile] "C:\Users\Drus\Desktop\gtkwave64\bin\simx.vcd"
+[dumpfile] ".\simx.vcd"
 [dumpfile_mtime] "Fri May 15 13:15:25 2020"
 [dumpfile_size] 423916
-[savefile] "C:\Users\Drus\Desktop\gtkwave64\bin\waveform.gtkw"
+[savefile] ".\waveform.gtkw"
 [timestart] 458
 [size] 1853 895
 [pos] -1 -1
