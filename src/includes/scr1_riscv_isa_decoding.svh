@@ -70,7 +70,8 @@ typedef enum logic [SCR1_IALU_CMD_WIDTH_E-1:0] {
     SCR1_IALU_CMD_SUB_GEU,      // op1 u>= op2
     SCR1_IALU_CMD_SLL,          // op1 << op2
     SCR1_IALU_CMD_SRL,          // op1 >> op2
-    SCR1_IALU_CMD_SRA           // op1 >>> op2
+    SCR1_IALU_CMD_SRA,           // op1 >>> op2
+    SCR1_IALU_CMD_SQRT          // sqrt(op1)
 `ifdef SCR1_RVM_EXT
     ,
     SCR1_IALU_CMD_MUL,          // low(unsig(op1) * unsig(op2))

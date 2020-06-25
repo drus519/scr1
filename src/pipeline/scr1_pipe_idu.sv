@@ -263,6 +263,11 @@ always_comb begin
                                         idu2exu_cmd.imm         = `SCR1_XLEN'(shamt);   // zero-extend
                                         idu2exu_cmd.ialu_cmd    = SCR1_IALU_CMD_SLL;
                                     end
+                                    7'b1111111 : begin
+                                        // SQRT
+                                        idu2exu_cmd.imm = `SCR1_XLEN'(shamt);           // zero-extend
+                                        idu2exu_cmd.ialu_cmd    = SCR1_IALU_CMD_SQRT;   // SQRT
+                                    end
                                     default     : rvi_illegal   = 1'b1;
                                 endcase // funct7
                             end
