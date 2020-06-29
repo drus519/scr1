@@ -82,22 +82,22 @@ endif
 ifeq (,$(findstring e,$(ARCH_lowercase)))
 ifeq (,$(findstring 0,$(IPIC)))
 # comment this target if you don't want to run the vectored_isr_sample
-TARGETS += vectored_isr_sample
+#TARGETS += vectored_isr_sample
 endif
 
 # comment this target if you don't want to run the riscv_isa
-TARGETS += riscv_isa
-
+#TARGETS += riscv_isa
+TARGETS += sqrt
 # comment this target if you don't want to run the riscv_compliance
-TARGETS += riscv_compliance
+#TARGETS += riscv_compliance
 endif
 
 # comment this target if you don't want to run the coremark
-TARGETS += coremark
+#TARGETS += coremark
 # comment this target if you don't want to run the dhrystone
-TARGETS += dhrystone21
+#TARGETS += dhrystone21
 # comment this target if you don't want to run the hello test
-TARGETS += hello
+#TARGETS += hello
 
 # Targets
 .PHONY: tests run_modelsim run_vcs run_ncsim run_verilator run_verilator_wf
@@ -127,6 +127,9 @@ riscv_compliance: | $(bld_dir)
 
 hello: | $(bld_dir)
 	-$(MAKE) -C $(tst_dir)/hello EXT_CFLAGS="$(EXT_CFLAGS)" ARCH=$(ARCH)
+
+sqrt: | $(bld_dir)
+	$(MAKE) -C $(tst_dir)/sqrt ARCH=$(ARCH)
 
 clean_hex: | $(bld_dir)
 	$(RM) $(bld_dir)/*.hex

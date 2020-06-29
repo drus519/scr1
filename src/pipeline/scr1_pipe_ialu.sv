@@ -109,6 +109,7 @@ logic [31:0]                                shft_res;       // SHIFT result
 
 logic unsigned [31:0]                       sqrt_op1;       // SQRT operand 1
 logic unsigned [31:0]                       sqrt_res;       // SQRT result
+logic [1:0]                                 sqrt_state;     // SQRT states
 
 `ifdef SCR1_RVM_EXT
 logic signed [32:0]                         mul_op1;        // MUL operand 1
@@ -318,25 +319,50 @@ end
 always_comb begin
     sqrt_op1 = ialu_op1;
     sqrt_res = 31'b0;
-    //reg [15:0] sqrt;    
-    //assign sqrt_res ={16'b0, sqrt};
-    sqrt_res[15] = sqrt_op1[31:30] == 2'b00 ? 1'b0 : 1'b1;
-    sqrt_res[14] = sqrt_op1[31:28] < {sqrt_res[15], 1'b1} * {sqrt_res[15], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[13] = sqrt_op1[31:26] < {sqrt_res[15:14], 1'b1} * {sqrt_res[15:14], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[12] = sqrt_op1[31:24] < {sqrt_res[15:13], 1'b1} * {sqrt_res[15:13], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[11] = sqrt_op1[31:22] < {sqrt_res[15:12], 1'b1} * {sqrt_res[15:12], 1'b1} ? 1'b0 : 1'b1 ;
-    sqrt_res[10] = sqrt_op1[31:20] < {sqrt_res[15:11], 1'b1} * {sqrt_res[15:11], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[9] = sqrt_op1[31:18]  < {sqrt_res[15:10], 1'b1} * {sqrt_res[15:10], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[8] = sqrt_op1[31:16]  < {sqrt_res[15:9 ], 1'b1} * {sqrt_res[15:9], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[7] = sqrt_op1[31:14]  < {sqrt_res[15:8 ], 1'b1} * {sqrt_res[15:8], 1'b1} ? 1'b0 : 1'b1 ;
-    sqrt_res[6] = sqrt_op1[31:12]  < {sqrt_res[15:7 ], 1'b1} * {sqrt_res[15:7], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[5] = sqrt_op1[31:10]  < {sqrt_res[15:6 ], 1'b1} * {sqrt_res[15:6], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[4] = sqrt_op1[31:8]   < {sqrt_res[15:5 ], 1'b1} * {sqrt_res[15:5], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[3] = sqrt_op1[31:6]   < {sqrt_res[15:4 ], 1'b1} * {sqrt_res[15:4], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[2] = sqrt_op1[31:4]   < {sqrt_res[15:3 ], 1'b1} * {sqrt_res[15:3], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[1] = sqrt_op1[31:2]   < {sqrt_res[15:2 ], 1'b1} * {sqrt_res[15:2], 1'b1} ? 1'b0 : 1'b1;
-    sqrt_res[0] = sqrt_op1[31:0]   < {sqrt_res[15:1 ], 1'b1} * {sqrt_res[15:1], 1'b1} ? 1'b0 : 1'b1;
+    case (sqrt_state)
+    2'b00: begin
+        sqrt_res[15] = sqrt_op1[31:30] == 2'b00 ? 1'b0 : 1'b1;
+        sqrt_res[14] = sqrt_op1[31:28] < {sqrt_res[15], 1'b1} * {sqrt_res[15], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[13] = sqrt_op1[31:26] < {sqrt_res[15:14], 1'b1} * {sqrt_res[15:14], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[12] = sqrt_op1[31:24] < {sqrt_res[15:13], 1'b1} * {sqrt_res[15:13], 1'b1} ? 1'b0 : 1'b1;
+        end
+        
+    2'b01: begin
+        sqrt_res[11] = sqrt_op1[31:22] < {sqrt_res[15:12], 1'b1} * {sqrt_res[15:12], 1'b1} ? 1'b0 : 1'b1 ;
+        sqrt_res[10] = sqrt_op1[31:20] < {sqrt_res[15:11], 1'b1} * {sqrt_res[15:11], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[9] = sqrt_op1[31:18]  < {sqrt_res[15:10], 1'b1} * {sqrt_res[15:10], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[8] = sqrt_op1[31:16]  < {sqrt_res[15:9 ], 1'b1} * {sqrt_res[15:9], 1'b1} ? 1'b0 : 1'b1;
+        end
+        
+    2'b10: begin
+        sqrt_res[7] = sqrt_op1[31:14]  < {sqrt_res[15:8 ], 1'b1} * {sqrt_res[15:8], 1'b1} ? 1'b0 : 1'b1 ;
+        sqrt_res[6] = sqrt_op1[31:12]  < {sqrt_res[15:7 ], 1'b1} * {sqrt_res[15:7], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[5] = sqrt_op1[31:10]  < {sqrt_res[15:6 ], 1'b1} * {sqrt_res[15:6], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[4] = sqrt_op1[31:8]   < {sqrt_res[15:5 ], 1'b1} * {sqrt_res[15:5], 1'b1} ? 1'b0 : 1'b1;
+        end
+        
+    2'b11: begin
+        sqrt_res[3] = sqrt_op1[31:6]   < {sqrt_res[15:4 ], 1'b1} * {sqrt_res[15:4], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[2] = sqrt_op1[31:4]   < {sqrt_res[15:3 ], 1'b1} * {sqrt_res[15:3], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[1] = sqrt_op1[31:2]   < {sqrt_res[15:2 ], 1'b1} * {sqrt_res[15:2], 1'b1} ? 1'b0 : 1'b1;
+        sqrt_res[0] = sqrt_op1[31:0]   < {sqrt_res[15:1 ], 1'b1} * {sqrt_res[15:1], 1'b1} ? 1'b0 : 1'b1;
+        end
+    endcase
 end
+
+///FSM SQRT
+always_ff @(posedge clk, negedge rst_n) begin
+if (~rst_n) begin
+        sqrt_state <= 2'b00;
+    end 
+    else 
+    case (sqrt_state)
+      2'b00: sqrt_state <= 2'b01;
+      2'b01: sqrt_state <= 2'b10;
+      2'b10: sqrt_state <= 2'b11;
+    endcase
+end
+
 
 
  `ifdef SCR1_RVM_EXT
