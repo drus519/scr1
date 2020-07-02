@@ -1,4 +1,4 @@
-/// Copyright by Syntacore LLC Â© 2016-2018. See LICENSE for details
+/// Copyright by Syntacore LLC © 2016-2018. See LICENSE for details
 /// @file       <scr1_pipe_ialu.sv>
 /// @brief      Integer Arithmetic Logic Unit (IALU)
 ///
@@ -107,6 +107,7 @@ logic [4:0]                                 shft_op2;       // SHIFT operand 2
 logic [1:0]                                 shft_cmd;       // SHIFT command: 00 - logical left, 10 - logical right, 11 - arithmetical right
 logic [31:0]                                shft_res;       // SHIFT result
 
+logic                                       sqrt_req;       // SQRT request
 logic unsigned [31:0]                       sqrt_op1;       // SQRT operand 1
 logic unsigned [31:0]                       sqrt_res;       // SQRT result
 logic [1:0]                                 sqrt_state;     // SQRT states
@@ -178,12 +179,7 @@ always_comb begin
             next_state = SCR1_IALU_FSM_IDLE;
         end
     endcase
-    
-    /*
-    case (sqrt_state)
-        
-    endcase
-    */
+
 end
 `endif // SCR1_RVM_EXT
 
@@ -322,9 +318,9 @@ end
 // SQRT
 //-------------------------------------------------------------------------------
 //input [31:0]sqrt_op1;
-//output [15:0] sqrt_res;    
+//output [15:0] sqrt_res;
 always_comb begin
-    
+
     case (sqrt_state)
     2'b00: begin
         sqrt_op1 = ialu_op1;
@@ -333,31 +329,31 @@ always_comb begin
         sqrt_res[14] = sqrt_op1[31:28] < {sqrt_res[15], 1'b1} * {sqrt_res[15], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[13] = sqrt_op1[31:26] < {sqrt_res[15:14], 1'b1} * {sqrt_res[15:14], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[12] = sqrt_op1[31:24] < {sqrt_res[15:13], 1'b1} * {sqrt_res[15:13], 1'b1} ? 1'b0 : 1'b1;
-        sqrt_rdy = 1'b0;////////////////////////////////////////////////////////////////////
+        sqrt_rdy = 1'b0;
         end
-        
+
     2'b01: begin
         sqrt_res[11] = sqrt_op1[31:22] < {sqrt_res[15:12], 1'b1} * {sqrt_res[15:12], 1'b1} ? 1'b0 : 1'b1 ;
         sqrt_res[10] = sqrt_op1[31:20] < {sqrt_res[15:11], 1'b1} * {sqrt_res[15:11], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[9] = sqrt_op1[31:18]  < {sqrt_res[15:10], 1'b1} * {sqrt_res[15:10], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[8] = sqrt_op1[31:16]  < {sqrt_res[15:9 ], 1'b1} * {sqrt_res[15:9], 1'b1} ? 1'b0 : 1'b1;
-        sqrt_rdy = 1'b0;/////////////////////////////////////////////////////////////
+        sqrt_rdy = 1'b0;
         end
-        
+
     2'b10: begin
         sqrt_res[7] = sqrt_op1[31:14]  < {sqrt_res[15:8 ], 1'b1} * {sqrt_res[15:8], 1'b1} ? 1'b0 : 1'b1 ;
         sqrt_res[6] = sqrt_op1[31:12]  < {sqrt_res[15:7 ], 1'b1} * {sqrt_res[15:7], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[5] = sqrt_op1[31:10]  < {sqrt_res[15:6 ], 1'b1} * {sqrt_res[15:6], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[4] = sqrt_op1[31:8]   < {sqrt_res[15:5 ], 1'b1} * {sqrt_res[15:5], 1'b1} ? 1'b0 : 1'b1;
-        sqrt_rdy = 1'b0;///////////////////////////////////////////////////////
+        sqrt_rdy = 1'b0;
         end
-        
+
     2'b11: begin
         sqrt_res[3] = sqrt_op1[31:6]   < {sqrt_res[15:4 ], 1'b1} * {sqrt_res[15:4], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[2] = sqrt_op1[31:4]   < {sqrt_res[15:3 ], 1'b1} * {sqrt_res[15:3], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[1] = sqrt_op1[31:2]   < {sqrt_res[15:2 ], 1'b1} * {sqrt_res[15:2], 1'b1} ? 1'b0 : 1'b1;
         sqrt_res[0] = sqrt_op1[31:0]   < {sqrt_res[15:1 ], 1'b1} * {sqrt_res[15:1], 1'b1} ? 1'b0 : 1'b1;
-        sqrt_rdy = 1'b1;///////////////////////////////////////////////////
+        sqrt_rdy = 1'b1;
         end
     default: sqrt_rdy = 1'b0;
     endcase
@@ -367,15 +363,18 @@ end
 always_ff @(posedge clk, negedge rst_n) begin
 if (~rst_n) begin
         sqrt_state <= 2'b00;
-        sqrt_rdy <= 1'b0;//////////////////////////////////
-    end 
-    else 
-    case (sqrt_state)
-      2'b00: sqrt_state <= 2'b01;
-      2'b01: sqrt_state <= 2'b10;
-      2'b10: sqrt_state <= 2'b11;
-      default: sqrt_state <= 2'b00;
-    endcase
+    end
+    else
+      if (sqrt_req) begin
+        case (sqrt_state)
+          2'b00: sqrt_state <= 2'b01;
+          2'b01: sqrt_state <= 2'b10;
+          2'b10: sqrt_state <= 2'b11;
+          default: sqrt_state <= 2'b00;
+        endcase
+      end else begin
+        sqrt_state <= 2'b00;
+      end
 end
 
 
@@ -479,6 +478,7 @@ always_comb begin
     ialu_res    = '0;
     ialu_cmp    = 1'b0;
     shft_cmd    = 2'b0;
+    sqrt_req    = 1'b0;
 `ifdef SCR1_RVM_EXT
     mdu_cmd     = SCR1_IALU_MDU_NONE;
     mul_cmd     = {((ialu_cmd == SCR1_IALU_CMD_MULHU) | (ialu_cmd == SCR1_IALU_CMD_MULHSU)),
@@ -534,8 +534,9 @@ always_comb begin
             shft_cmd    = {(ialu_cmd != SCR1_IALU_CMD_SLL), (ialu_cmd == SCR1_IALU_CMD_SRA)};
             ialu_res    = shft_res;
         end
-        
+
         SCR1_IALU_CMD_SQRT: begin
+            sqrt_req = 1'b1;
             ialu_res = sqrt_res;
             ialu_rdy = sqrt_rdy;/////////////////////////////////////
         end
